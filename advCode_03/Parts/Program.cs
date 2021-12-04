@@ -10,18 +10,16 @@ using (MemoryStream mem = new MemoryStream())
         .ToArray();
 }
 int stringlength = input[0].Length;
-var sums = new (int zeros, int ones)[stringlength];
 
-var results = input.Aggregate(sums, (aggr, item) =>
+var results = input.Aggregate(new (int zeros, int ones)[stringlength], (aggr, item) =>
 {
-    var sumaggr = new (int zeros, int ones)[stringlength];
     for (int i = 0; i < item.Length; i++)
     {
         var value = Convert.ToInt32(item[i].ToString()) == 0;
-        sumaggr[i] = (aggr[i].zeros + (value ? 1 : 0), aggr[i].ones + (value ? 0 : 1));
+        aggr[i] = (aggr[i].zeros + (value ? 1 : 0), aggr[i].ones + (value ? 0 : 1));
     }
 
-    return sumaggr;
+    return aggr;
 });
 
 int[] maxValues = new int[stringlength];
@@ -44,10 +42,8 @@ int ToDecimal(int[] item)
     return sum;
 }
 
-Console.WriteLine($"Minvalue: {string.Join("", minValues.Select(x => $"{x}"))}");
-Console.WriteLine($"Maxvalue: {string.Join("", maxValues.Select(x => $"{x}"))}");
+Console.WriteLine($"Minvalue: {string.Join("", minValues.Select(x => $"{x}"))}: {ToDecimal(minValues)}");
+Console.WriteLine($"Maxvalue: {string.Join("", maxValues.Select(x => $"{x}"))}: {ToDecimal(maxValues)}");
 
-Console.WriteLine($"Minvalue: {ToDecimal(minValues)}");
-Console.WriteLine($"Maxvalue: {ToDecimal(maxValues)}");
+Console.WriteLine($"Product for part 1: {ToDecimal(minValues) * ToDecimal(maxValues)}");
 
-Console.WriteLine($"Product: {ToDecimal(minValues) * ToDecimal(maxValues)}");
