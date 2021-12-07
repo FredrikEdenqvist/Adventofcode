@@ -14,37 +14,38 @@ int[] bingonumbers = input[..endpositionRow1]
     .ToArray();
 
 int[] bingoboards = input[endpositionRow1..]
-    .Split(new [] { " ", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+    .Split(new[] { " ", "\n" }, StringSplitOptions.RemoveEmptyEntries)
     .Select(x => Convert.ToInt32(x))
     .ToArray();
 
 var boards = parts.Board.GenerateBoards(bingoboards, 5, 5).ToArray();
 
-int[]? winnerRow = null;
-var lastBingoNumber = 0;
-var done = false;
+var bingoOrder = new List<(parts.Board board, int bingoNumber)>();
 
-for(int i = 0; i < bingonumbers.Length; i++)
+for (int i = 0; i < bingonumbers.Length; i++)
 {
-    lastBingoNumber = bingonumbers[i];
-    for(int b = 0; b < boards.Length; b++)
+    for (int b = 0; b < boards.Length; b++)
     {
-        boards[b].AddBingoNumber(lastBingoNumber);
-        var bingoRow = boards[b].GetBingoRow();
-        if (bingoRow != null && bingoRow.Length > 0)
+        if (!boards[b].HasBingo)
         {
-            winnerRow = bingoRow;
-            done = true;
+            boards[b].AddBingoNumber(bingonumbers[i]);
+            if (boards[b].HasBingo)
+            {
+                bingoOrder.Add((boards[b], bingonumbers[i]));
+            }
         }
-        if (done) break;
     }
-    if (done) break;
 }
 
-if (winnerRow == null)
+if (!bingoOrder.Any())
     Console.WriteLine("No winner :(");
 else
 {
-    var quizAnswer1 = winnerRow?.Sum(x => x) * lastBingoNumber;
+    (parts.Board board, int bingonumber) = bingoOrder.First();
+    var quizAnswer1 = board.GetWinningBingoBoard()?.Sum(x => x) * bingonumber;
     Console.WriteLine($"Quiz answer part 1: {quizAnswer1}");
+
+    (parts.Board lastBoard, int lastBingonumber) = bingoOrder.Last();
+    var quizAnswer2 = lastBoard.GetWinningBingoBoard()?.Sum(x => x) * lastBingonumber;
+    Console.WriteLine($"Quiz answer part 2: {quizAnswer2}");
 }

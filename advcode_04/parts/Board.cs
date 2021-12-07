@@ -52,6 +52,9 @@
 
         public void AddBingoNumber(int number)
         {
+            if (HasBingo)
+                return;
+
             foreach(var line in Sequence)
             {
                 for (int i = 0; i < line.Length; i++)
@@ -62,11 +65,18 @@
             }
         }
 
-        public int[]? GetBingoRow()
+        public int[]? GetWinningBingoBoard()
         {
-            if (Sequence.Any(x => x.All(y => y.bingo)))
+            if (HasBingo)
                 return Sequence.Take(Rows).SelectMany(x => x).Where(x => !x.bingo).Select(x => x.number).ToArray();
             return null;
         }
+
+        public int[]? GetUnMarkedBoardNumbers()
+        {
+            return Sequence.Take(Rows).SelectMany(x => x).Where(x => !x.bingo).Select(x => x.number).ToArray();
+        }
+
+        public bool HasBingo => Sequence.Any(x => x.All(y => y.bingo));
     }
 }
