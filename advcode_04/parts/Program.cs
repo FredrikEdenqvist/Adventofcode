@@ -20,4 +20,31 @@ int[] bingoboards = input[endpositionRow1..]
 
 var boards = parts.Board.GenerateBoards(bingoboards, 5, 5).ToArray();
 
-Console.WriteLine("");
+int[]? winnerRow = null;
+var lastBingoNumber = 0;
+var done = false;
+
+for(int i = 0; i < bingonumbers.Length; i++)
+{
+    lastBingoNumber = bingonumbers[i];
+    for(int b = 0; b < boards.Length; b++)
+    {
+        boards[b].AddBingoNumber(lastBingoNumber);
+        var bingoRow = boards[b].GetBingoRow();
+        if (bingoRow != null && bingoRow.Length > 0)
+        {
+            winnerRow = bingoRow;
+            done = true;
+        }
+        if (done) break;
+    }
+    if (done) break;
+}
+
+if (winnerRow == null)
+    Console.WriteLine("No winner :(");
+else
+{
+    var quizAnswer1 = winnerRow?.Sum(x => x) * lastBingoNumber;
+    Console.WriteLine($"Quiz answer part 1: {quizAnswer1}");
+}
