@@ -3,6 +3,7 @@
     public class Board
     {
         public List<(int number, bool bingo)[]> Sequence { get; private set; }
+        public int Rows { get; }
 
         public static IEnumerable<Board> GenerateBoards(int[] boardSequence, int x, int y)
         {
@@ -46,6 +47,7 @@
         public Board(int[] sequence, int x, int y)
         {
             Sequence = FindLines(sequence, x, y);
+            Rows = y;
         }
 
         public void AddBingoNumber(int number)
@@ -58,15 +60,13 @@
                         line[i].bingo = true;
                 }
             }
-
         }
 
         public int[]? GetBingoRow()
         {
-            return Sequence
-                .Where(x => x.All(y => y.bingo))
-                .Select(x => x.Select(y => y.number).ToArray())
-                .FirstOrDefault();
+            if (Sequence.Any(x => x.All(y => y.bingo)))
+                return Sequence.Take(Rows).SelectMany(x => x).Where(x => !x.bingo).Select(x => x.number).ToArray();
+            return null;
         }
     }
 }
